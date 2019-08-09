@@ -1,9 +1,12 @@
-__version__ = "0.1.1"
+__version__ = "0.1.3"
 
 import setuptools
 from sphinxcontrib import asciinema as pkg
 
 pkgname = pkg.__name__
+
+with open('README.md', 'r') as fh:
+    long_description = fh.read()
 
 setuptools.setup(
     name=pkgname,
@@ -14,7 +17,8 @@ setuptools.setup(
     license=pkg.__license__,
     url='https://github.com/divi255/sphinxcontrib.asciinema',
     description='''embedding asciinema videos in Sphinx docs''',
-    long_description=pkg.__doc__,
+    long_description_content_type='text/markdown',
+    long_description=long_description,
     namespace_packages=['sphinxcontrib'],
     classifiers='''
 Programming Language :: Python

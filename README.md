@@ -7,7 +7,7 @@ Installation
 ============
 
 ```shell
-pip3 install sphinxcontrib-asciinema
+pip3 install sphinxcontrib.asciinema
 ```
 
 Usage
