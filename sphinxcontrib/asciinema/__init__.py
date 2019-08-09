@@ -1,7 +1,7 @@
 __author__ = "Sergei S."
 __copyright__ = "Copyright (C) 2019"
 __license__ = "MIT"
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 
 def setup(app):
 

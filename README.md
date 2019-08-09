@@ -28,7 +28,7 @@ Insert videos into *rst* docs:
 or
 
 ```rst
-.. asciinema:: https://asciinema.org/a/26148
+.. asciinema:: https://asciinema.org/a/261648
 ```
 
 (replace "261648" with your video id)
