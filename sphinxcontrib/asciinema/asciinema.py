@@ -1,7 +1,7 @@
 __author__ = "Sergei S. (https://makeitwork.cz/)"
 __copyright__ = "Copyright (C) 2019"
 __license__ = "MIT"
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 
 from docutils import nodes
 from docutils.parsers import rst
@@ -51,7 +51,7 @@ class ASCIINemaDirective(rst.Directive):
         arg = self.arguments[0]
 
         if arg.startswith('http'):
-            node.video_id = arg.split('/', 1)[-1]
+            node.video_id = arg.rsplit('/', 1)[-1]
         else:
             node.video_id = arg
 
