@@ -1,0 +1,3 @@
+include sphinxcontrib/asciinema/_static/*
+include README.md
+include LICENSE

@@ -1,5 +1,3 @@
-__version__ = "0.1.5"
-
 import setuptools
 from sphinxcontrib import asciinema as pkg
 
@@ -13,9 +11,9 @@ setuptools.setup(
     version=pkg.__version__,
     packages=setuptools.find_packages(),
     install_requires=['sphinx'],
-    author=pkg.__author__,
+    include_package_data=True,
     license=pkg.__license__,
-    url='https://github.com/divi255/sphinxcontrib.asciinema',
+    url='https://github.com/teake/sphinxcontrib.asciinema',
     description='''embedding asciinema videos in Sphinx docs''',
     long_description_content_type='text/markdown',
     long_description=long_description,

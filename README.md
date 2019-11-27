@@ -1,36 +1,52 @@
-sphinxcontrib-asciinema
-***********************
+# sphinxcontrib-asciinema
 
 Easily embed [asciinema](https://asciinema.org/) videos into Sphinx rst docs.
 
-Installation
-============
+## Installation
+
+Clone and cd into this repository, then:
 
 ```shell
-pip3 install sphinxcontrib.asciinema
+pip install .
 ```
 
-Usage
-=====
+##  Usage
 
-Append extension to sphinx *conf.py*:
+Append extension to sphinx `conf.py`:
 
 ```python
 extensions = ['sphinxcontrib.asciinema']
 ```
 
-Insert videos into *rst* docs:
+Insert videos into `.rst` docs by embedding them from asciinema.org:
 
 ```rst
 .. asciinema:: 261648
 ```
 
-or
+or for a local file with a self-hosted web player:
 
 ```rst
-.. asciinema:: https://asciinema.org/a/261648
+.. asciinema:: local_file.cast
 ```
 
-(replace "261648" with your video id)
+It is possible to give options as well:
 
-Enjoy!
+```rst
+.. asciinema:: local_file.cast
+   :preload: 1
+   :theme: solarized-dark
+```
+
+You can enter all options from the [self-hosted player](https://github.com/asciinema/asciinema-player#asciinema-player-element-attributes)
+and the [embedded asciinema.org player](https://asciinema.org/docs/embedding).
+
+Default options can be set in `conf.py`:
+
+```python
+sphinxcontrib_asciinema_defaults = {
+    'theme': 'solarized-dark',
+    'preload': 1,
+    'font-size': '15px'
+}
+```

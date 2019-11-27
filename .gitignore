@@ -2,5 +2,4 @@ __pycache__
 sphinxcontrib.asciinema.egg-info
 build
 dist
-Makefile
-TODO.todo
+.idea
