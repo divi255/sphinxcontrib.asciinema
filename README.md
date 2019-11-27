@@ -10,6 +10,12 @@ Clone and cd into this repository, then:
 pip install .
 ```
 
+or install from PyPI:
+
+```shell
+pip install sphinxcontrib.asciinema
+```
+
 ##  Usage
 
 Append extension to sphinx `conf.py`:
