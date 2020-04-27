@@ -23,13 +23,14 @@ class Asciinema(nodes.General, nodes.Element):
     cast_id = None
 
 
-def visit(self, node):
+def visit_html(self, node):
     if node.cast_file is not None:
         template = '<asciinema-player {options} src="{src}"></asciinema-player>'
         option_template = '{}="{}" '
         src = node.cast_file
     else:
-        template = '<script id="asciicast-{src}" {options} src="https://asciinema.org/a/{src}.js" async></script>'
+        template = ('<script id="asciicast-{src}" {options} '
+                    'src="https://asciinema.org/a/{src}.js" async></script>')
         option_template = 'data-{}="{}" '
         src = node.cast_id
     options = ''
@@ -37,6 +38,10 @@ def visit(self, node):
         options += option_template.format(n, v)
     tag = (template.format(options=options, src=src))
     self.body.append(tag)
+
+
+def visit_man(self, node):
+    pass
 
 
 def depart(self, node):
