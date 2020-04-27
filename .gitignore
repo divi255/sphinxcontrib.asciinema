@@ -3,3 +3,4 @@ sphinxcontrib.asciinema.egg-info
 build
 dist
 .idea
+Makefile
