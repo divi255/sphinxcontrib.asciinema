@@ -1,6 +1,6 @@
 __copyright__ = 'Copyright (C) 2019'
 __license__ = 'MIT'
-__version__ = "0.1.8"
+__version__ = "0.1.9"
 
 
 def setup(app):

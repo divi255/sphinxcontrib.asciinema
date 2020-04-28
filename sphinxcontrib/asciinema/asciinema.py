@@ -7,6 +7,7 @@ from docutils.parsers.rst import directives
 from sphinx.util.fileutil import copy_asset
 from sphinx.util.docutils import SphinxDirective
 from sphinx.util.osutil import relative_uri
+from sphinx.errors import NoUri
 
 
 def copy_asset_files(app, exc):
@@ -102,8 +103,11 @@ class ASCIINemaDirective(SphinxDirective):
 
         # Determine relative path from doc to _asset build path.
         target_file_uri = posixpath.join('_casts', md5_hash, rel_file)
-        doc_uri = self.env.app.builder.get_target_uri(self.env.docname)
-        return relative_uri(doc_uri, target_file_uri)
+        try:
+            doc_uri = self.env.app.builder.get_target_uri(self.env.docname)
+            return relative_uri(doc_uri, target_file_uri)
+        except NoUri:
+            return None
 
 
 def md5(fname):
