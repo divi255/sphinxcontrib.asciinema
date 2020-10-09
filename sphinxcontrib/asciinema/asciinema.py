@@ -85,7 +85,8 @@ class ASCIINemaDirective(SphinxDirective):
             node.cast_file = self.add_file(arg)
         else:
             node.cast_id = arg
-        node.options = self.env.config['sphinxcontrib_asciinema_defaults']
+        # copy default options, otherwise reference is shared between all nodes
+        node.options = dict(self.env.config['sphinxcontrib_asciinema_defaults'])
         node.options.update(self.options)
         return [node]
 
