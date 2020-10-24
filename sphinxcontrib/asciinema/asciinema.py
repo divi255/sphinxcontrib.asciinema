@@ -29,11 +29,13 @@ def visit_html(self, node):
         template = '<asciinema-player {options} src="{src}"></asciinema-player>'
         option_template = '{}="{}" '
         src = node.cast_file
-    else:
+    elif node.cast_id is not None:
         template = ('<script id="asciicast-{src}" {options} '
                     'src="https://asciinema.org/a/{src}.js" async></script>')
         option_template = 'data-{}="{}" '
         src = node.cast_id
+    else:
+        raise ValueError('directive isn not properly set')
     options = ''
     for n, v in node.options.items():
         if n not in ['path']:
