@@ -7,7 +7,10 @@ from docutils.parsers.rst import directives
 from sphinx.util.fileutil import copy_asset
 from sphinx.util.docutils import SphinxDirective
 from sphinx.util.osutil import relative_uri
+from sphinx.util import logging
 from sphinx.errors import NoUri
+
+logger = logging.getLogger(__name__)
 
 
 def copy_asset_files(app, exc):
@@ -35,7 +38,8 @@ def visit_html(self, node):
         option_template = 'data-{}="{}" '
         src = node.cast_id
     else:
-        raise ValueError('directive isn not properly set')
+        logger.warning('asciinema directive is not properly set')
+        return
     options = ''
     for n, v in node.options.items():
         if n not in ['path']:
@@ -94,8 +98,10 @@ class ASCIINemaDirective(SphinxDirective):
         fname = arg if arg.startswith('./') else path + arg
         if self.is_file(fname):
             node.cast_file = self.add_file(fname)
+            logger.debug('asciinema: added cast file %s' % fname)
         else:
             node.cast_id = arg
+            logger.debug('asciinema: added cast id %s' % arg)
         return [node]
 
     def is_file(self, rel_file):
