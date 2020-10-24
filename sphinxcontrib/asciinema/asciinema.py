@@ -36,7 +36,8 @@ def visit_html(self, node):
         src = node.cast_id
     options = ''
     for n, v in node.options.items():
-        options += option_template.format(n, v)
+        if n not in ['path']:
+            options += option_template.format(n, v)
     tag = (template.format(options=options, src=src))
     self.body.append(tag)
 
@@ -73,7 +74,8 @@ class ASCIINemaDirective(SphinxDirective):
         't': directives.unchanged,
         'author': directives.unchanged,
         'author-url': directives.unchanged,
-        'author-img-url': directives.unchanged
+        'author-img-url': directives.unchanged,
+        'path': directives.unchanged,
     }
     required_arguments = 1
     optional_arguments = len(option_spec)
@@ -81,13 +83,17 @@ class ASCIINemaDirective(SphinxDirective):
     def run(self):
         node = self.node_class()
         arg = self.arguments[0]
-        if self.is_file(arg):
-            node.cast_file = self.add_file(arg)
-        else:
-            node.cast_id = arg
         # copy default options, otherwise reference is shared between all nodes
         node.options = dict(self.env.config['sphinxcontrib_asciinema_defaults'])
         node.options.update(self.options)
+        path = node.options.get('path', '')
+        if path and not path.endswith('/'):
+            path += '/'
+        fname = arg if arg.startswith('./') else path + arg
+        if self.is_file(fname):
+            node.cast_file = self.add_file(fname)
+        else:
+            node.cast_id = arg
         return [node]
 
     def is_file(self, rel_file):

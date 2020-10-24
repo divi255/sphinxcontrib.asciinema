@@ -53,6 +53,10 @@ Default options can be set in `conf.py`:
 sphinxcontrib_asciinema_defaults = {
     'theme': 'solarized-dark',
     'preload': 1,
-    'font-size': '15px'
+    'font-size': '15px',
+#    'path': 'path/to/castdir'
 }
 ```
+
+The "path" option can be specified to set the default cast file directory. If a
+local file path starts with "./", the option is ignored.
