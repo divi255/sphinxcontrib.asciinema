@@ -109,7 +109,8 @@ class ASCIINemaDirective(SphinxDirective):
         copy_asset(file_path, target_dir)
 
         # Determine relative path from doc to _asset build path.
-        target_file_uri = posixpath.join('_casts', md5_hash, os.path.basename(rel_file))
+        target_file_uri = posixpath.join('_casts', md5_hash,
+                                         os.path.basename(rel_file))
         try:
             doc_uri = self.env.app.builder.get_target_uri(self.env.docname)
             return relative_uri(doc_uri, target_file_uri)
