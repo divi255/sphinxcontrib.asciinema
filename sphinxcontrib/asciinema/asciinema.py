@@ -23,33 +23,29 @@ def copy_asset_files(app, exc):
 
 
 class Asciinema(nodes.General, nodes.Element):
-    cast_file = None
-    cast_id = None
+    pass
 
 
 def visit_html(self, node):
-    if node.cast_file is not None:
+    if node['type'] == 'local':
         template = '<asciinema-player {options} src="{src}"></asciinema-player>'
         option_template = '{}="{}" '
-        src = node.cast_file
-    elif node.cast_id is not None:
+        src = node['content']
+    else:
         template = ('<script id="asciicast-{src}" {options} '
                     'src="https://asciinema.org/a/{src}.js" async></script>')
         option_template = 'data-{}="{}" '
-        src = node.cast_id
-    else:
-        logger.warning('asciinema directive is not properly set')
-        return
+        src = node['content']
     options = ''
-    for n, v in node.options.items():
-        if n not in ['path']:
-            options += option_template.format(n, v)
+    for n, v in node['options'].items():
+        options += option_template.format(n, v)
     tag = (template.format(options=options, src=src))
     self.body.append(tag)
 
 
-def visit_man(self, node):
-    pass
+def visit_unsupported(self, node):
+    logger.warning('asciinema: unsupported output format (node skipped)')
+    raise nodes.SkipNode
 
 
 def depart(self, node):
@@ -57,11 +53,7 @@ def depart(self, node):
 
 
 class ASCIINemaDirective(SphinxDirective):
-
-    name = 'asciinema'
-    node_class = Asciinema
-
-    has_content = False
+    has_content = True
     final_argument_whitespace = False
     option_spec = {
         'cols': directives.positive_int,
@@ -87,22 +79,25 @@ class ASCIINemaDirective(SphinxDirective):
     optional_arguments = len(option_spec)
 
     def run(self):
-        node = self.node_class()
         arg = self.arguments[0]
-        # copy default options, otherwise reference is shared between all nodes
-        node.options = dict(self.env.config['sphinxcontrib_asciinema_defaults'])
-        node.options.update(self.options)
-        path = node.options.get('path', '')
+        options = dict(self.env.config['sphinxcontrib_asciinema_defaults'])
+        options.update(self.options)
+        kw = {'options': options}
+        path = self.options.get('path', '')
         if path and not path.endswith('/'):
             path += '/'
         fname = arg if arg.startswith('./') else path + arg
         if self.is_file(fname):
-            node.cast_file = self.add_file(fname)
+            kw['content'] = self.add_file(fname)
+            kw['type'] = 'local'
             logger.debug('asciinema: added cast file %s' % fname)
         else:
-            node.cast_id = arg
+            kw['content'] = arg
+            kw['type'] = 'remote'
             logger.debug('asciinema: added cast id %s' % arg)
-        return [node]
+        if 'path ' in kw['options']:
+            del kw['options']['path']
+        return [Asciinema(**kw)]
 
     def is_file(self, rel_file):
         file_path = self.env.relfn2path(rel_file)[1]
@@ -110,14 +105,14 @@ class ASCIINemaDirective(SphinxDirective):
 
     def add_file(self, rel_file):
         file_path = self.env.relfn2path(rel_file)[1]
-        md5_hash = md5(file_path)
+        sha256_hash = sha256(file_path)
 
         # Copy file to _asset build path.
-        target_dir = os.path.join(self.env.app.outdir, '_casts', md5_hash)
+        target_dir = os.path.join(self.env.app.outdir, '_casts', sha256_hash)
         copy_asset(file_path, target_dir)
 
         # Determine relative path from doc to _asset build path.
-        target_file_uri = posixpath.join('_casts', md5_hash,
+        target_file_uri = posixpath.join('_casts', sha256_hash,
                                          os.path.basename(rel_file))
         try:
             doc_uri = self.env.app.builder.get_target_uri(self.env.docname)
@@ -126,9 +121,18 @@ class ASCIINemaDirective(SphinxDirective):
             return None
 
 
-def md5(fname):
-    hash_md5 = hashlib.md5()
+def sha256(fname):
+    hash_sha256 = hashlib.sha256()
     with open(fname, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
-            hash_md5.update(chunk)
-    return hash_md5.hexdigest()
+            hash_sha256.update(chunk)
+    return hash_sha256.hexdigest()
+
+
+_NODE_VISITORS = {
+    'html': (visit_html, depart),
+    'latex': (visit_unsupported, None),
+    'man': (visit_unsupported, None),
+    'texinfo': (visit_unsupported, None),
+    'text': (visit_unsupported, None)
+}
