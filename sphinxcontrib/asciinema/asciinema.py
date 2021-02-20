@@ -1,14 +1,10 @@
-import hashlib
 import os
-import posixpath
 
 from docutils import nodes
 from docutils.parsers.rst import directives
 from sphinx.util.fileutil import copy_asset
 from sphinx.util.docutils import SphinxDirective
-from sphinx.util.osutil import relative_uri
 from sphinx.util import logging
-from sphinx.errors import NoUri
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +24,7 @@ class Asciinema(nodes.General, nodes.Element):
 
 def visit_html(self, node):
     if node['type'] == 'local':
-        template = '<asciinema-player {options} src="{src}"></asciinema-player>'
+        template = '<asciinema-player {options} src="data:application/json;base64,{src}" />'
         option_template = '{}="{}" '
         src = node['content']
     else:
@@ -88,7 +84,7 @@ class ASCIINemaDirective(SphinxDirective):
             path += '/'
         fname = arg if arg.startswith('./') else path + arg
         if self.is_file(fname):
-            kw['content'] = self.add_file(fname)
+            kw['content'] = self.to_b64(fname)
             kw['type'] = 'local'
             logger.debug('asciinema: added cast file %s' % fname)
         else:
@@ -103,30 +99,12 @@ class ASCIINemaDirective(SphinxDirective):
         file_path = self.env.relfn2path(rel_file)[1]
         return os.path.isfile(file_path)
 
-    def add_file(self, rel_file):
-        file_path = self.env.relfn2path(rel_file)[1]
-        sha256_hash = sha256(file_path)
-
-        # Copy file to _asset build path.
-        target_dir = os.path.join(self.env.app.outdir, '_casts', sha256_hash)
-        copy_asset(file_path, target_dir)
-
-        # Determine relative path from doc to _asset build path.
-        target_file_uri = posixpath.join('_casts', sha256_hash,
-                                         os.path.basename(rel_file))
-        try:
-            doc_uri = self.env.app.builder.get_target_uri(self.env.docname)
-            return relative_uri(doc_uri, target_file_uri)
-        except NoUri:
-            return None
-
-
-def sha256(fname):
-    hash_sha256 = hashlib.sha256()
-    with open(fname, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            hash_sha256.update(chunk)
-    return hash_sha256.hexdigest()
+    def to_b64(self, filename):
+        import base64
+        with open(filename, 'rb') as file:
+            content = file.read()
+        b64encoded = base64.b64encode(content)
+        return b64encoded.decode()
 
 
 _NODE_VISITORS = {
