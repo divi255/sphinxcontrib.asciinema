@@ -4,7 +4,7 @@
 }
 
 .asciinema-terminal {
-  font-family: Consolas, Menlo, 'Bitstream Vera Sans Mono', monospace, 'Powerline Symbols' !important;
+  font-family: Consolas, Menlo, 'Bitstream Vera Sans Mono', monospace, 'Powerline Symbols';
 }
 
 .asciinema-player-wrapper {
