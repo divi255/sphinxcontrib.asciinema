@@ -1,14 +1,10 @@
-import hashlib
 import os
-import posixpath
 
 from docutils import nodes
 from docutils.parsers.rst import directives
 from sphinx.util.fileutil import copy_asset
 from sphinx.util.docutils import SphinxDirective
-from sphinx.util.osutil import relative_uri
 from sphinx.util import logging
-from sphinx.errors import NoUri
 
 logger = logging.getLogger(__name__)
 
