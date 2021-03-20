@@ -101,7 +101,8 @@ class ASCIINemaDirective(SphinxDirective):
 
     def to_b64(self, filename):
         import base64
-        with open(filename, 'rb') as file:
+        file_path = self.env.relfn2path(filename)[1]
+        with open(file_path, 'rb') as file:
             content = file.read()
         b64encoded = base64.b64encode(content)
         return b64encoded.decode()
