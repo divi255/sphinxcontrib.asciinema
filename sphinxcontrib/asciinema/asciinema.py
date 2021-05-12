@@ -24,7 +24,9 @@ class Asciinema(nodes.General, nodes.Element):
 
 def visit_html(self, node):
     if node['type'] == 'local':
-        template = '<asciinema-player {options} src="data:application/json;base64,{src}" />'
+        template = (
+            '<asciinema-player {options} '
+            'src="data:application/json;base64,{src}"></asciinema-player>')
         option_template = '{}="{}" '
         src = node['content']
     else:
