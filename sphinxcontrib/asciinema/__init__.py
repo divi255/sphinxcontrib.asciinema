@@ -16,3 +16,9 @@ def setup(app):
 
     app.add_node(Asciinema, **_NODE_VISITORS)
     app.add_directive('asciinema', ASCIINemaDirective)
+
+    return {
+        'version': __version__, 
+        'parallel_read_safe': True, 
+        'parallel_write_safe': True,
+    }
