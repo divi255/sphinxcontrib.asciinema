@@ -64,6 +64,7 @@ class ASCIINemaDirective(SphinxDirective):
         'idle-time-limit': directives.unchanged,
         'poster': directives.unchanged,
         'font-size': directives.unchanged,
+        'font-family': directives.unchanged,
         'size': directives.unchanged,
         'theme': directives.unchanged,
         'title': directives.unchanged,
