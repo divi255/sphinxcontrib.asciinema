@@ -2,11 +2,11 @@ import io
 import os
 import setuptools
 
+here = os.path.abspath(os.path.dirname(__file__))
 with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = '\n' + f.read()
 
 about = {}
-here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, "sphinxcontrib", "asciinema", '__init__.py')) as f:
     exec(f.read(), about)
 
