@@ -23,6 +23,7 @@ setuptools.setup(
     long_description=long_description,
     namespace_packages=['sphinxcontrib'],
     classifiers='''
+Framework :: Sphinx :: Extension
 Programming Language :: Python
 License :: OSI Approved :: MIT License
 Programming Language :: Python :: 3
