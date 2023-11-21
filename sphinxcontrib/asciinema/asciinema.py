@@ -94,7 +94,7 @@ class ASCIINemaDirective(SphinxDirective):
             kw['content'] = arg
             kw['type'] = 'remote'
             logger.debug('asciinema: added cast id %s' % arg)
-        if 'path ' in kw['options']:
+        if 'path' in kw['options']:
             del kw['options']['path']
         return [Asciinema(**kw)]
 
