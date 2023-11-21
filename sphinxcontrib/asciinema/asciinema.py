@@ -82,7 +82,7 @@ class ASCIINemaDirective(SphinxDirective):
         options = dict(self.env.config['sphinxcontrib_asciinema_defaults'])
         options.update(self.options)
         kw = {'options': options}
-        path = self.options.get('path', '')
+        path = options.get('path', '')
         if path and not path.endswith('/'):
             path += '/'
         fname = arg if arg.startswith('./') else path + arg
