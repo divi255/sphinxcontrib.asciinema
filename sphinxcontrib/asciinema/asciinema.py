@@ -23,21 +23,29 @@ class Asciinema(nodes.General, nodes.Element):
 
 
 def visit_html(self, node):
-    if node['type'] == 'local':
-        template = (
-            '<asciinema-player {options} '
-            'src="data:application/json;base64,{src}"></asciinema-player>')
-        option_template = '{}="{}" '
-        src = node['content']
-    else:
-        template = ('<script id="asciicast-{src}" {options} '
-                    'src="https://asciinema.org/a/{src}.js" async></script>')
-        option_template = 'data-{}="{}" '
-        src = node['content']
-    options = ''
-    for n, v in node['options'].items():
+    rst_to_js_option_names: dict[str, str] = {
+        "terminalfontsize": "terminalFontSize",
+        "terminallineheigth": "terminalLineHeigth",
+        "terminalfontfamily": "terminalFontFamily",
+    }
+
+    gen = (
+        (rst_option_name, js_option_name)
+        for (rst_option_name, js_option_name) in rst_to_js_option_names.items()
+        if rst_option_name in node["options"]
+    )
+    for rst_option_name, js_option_name in gen:
+        node["options"][js_option_name] = node["options"].pop(rst_option_name)
+
+    load = """<script src="../_static/asciinema-player_3.6.3.js"></script>"""
+    template = """<div id="asciicast-{src}" src></div>\n<script>\nAsciinemaPlayer.create("{src}", document.getElementById('asciicast-{src}'), {{{options} }});\n</script>\n"""
+    option_template = '{}: "{}", '
+    src = node["content"]
+    options = ""
+    for n, v in node["options"].items():
         options += option_template.format(n, v)
-    tag = (template.format(options=options, src=src))
+    tag = template.format(options=options, src=src)
+    self.body.append(load)
     self.body.append(tag)
 
 
@@ -54,25 +62,24 @@ class ASCIINemaDirective(SphinxDirective):
     has_content = True
     final_argument_whitespace = False
     option_spec = {
-        'cols': directives.positive_int,
-        'rows': directives.positive_int,
-        'autoplay': directives.unchanged,
-        'preload': directives.unchanged,
-        'loop': directives.unchanged,
-        'start-at': directives.unchanged,
-        'speed': directives.unchanged,
-        'idle-time-limit': directives.unchanged,
-        'poster': directives.unchanged,
-        'font-size': directives.unchanged,
-        'font-family': directives.unchanged,
-        'size': directives.unchanged,
-        'theme': directives.unchanged,
-        'title': directives.unchanged,
-        't': directives.unchanged,
-        'author': directives.unchanged,
-        'author-url': directives.unchanged,
-        'author-img-url': directives.unchanged,
-        'path': directives.unchanged,
+        "cols": directives.positive_int,
+        "rows": directives.positive_int,
+        "autoplay": directives.unchanged,
+        "preload": directives.unchanged,
+        "loop": directives.unchanged,
+        "start-at": directives.unchanged,
+        "speed": directives.unchanged,
+        "idle-time-limit": directives.unchanged,
+        "theme": directives.unchanged,
+        "poster": directives.unchanged,
+        "fit": directives.unchanged,
+        "controls": directives.unchanged,
+        "markers": directives.unchanged,
+        "pauseOnMarkers": directives.unchanged,
+        "terminalfontsize": directives.unchanged,
+        "terminalfontfamily": directives.unchanged,
+        "terminallineheight": directives.unchanged,
+        "path": directives.unchanged,
     }
     required_arguments = 1
     optional_arguments = len(option_spec)
@@ -87,7 +94,7 @@ class ASCIINemaDirective(SphinxDirective):
             path += '/'
         fname = arg if arg.startswith('./') else path + arg
         if self.is_file(fname):
-            kw['content'] = self.to_b64(fname)
+            kw['content'] = fname
             kw['type'] = 'local'
             logger.debug('asciinema: added cast file %s' % fname)
         else:
