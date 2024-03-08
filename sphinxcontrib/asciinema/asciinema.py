@@ -29,23 +29,31 @@ def visit_html(self, node):
         "terminalfontfamily": "terminalFontFamily",
     }
 
-    gen = (
-        (rst_option_name, js_option_name)
-        for (rst_option_name, js_option_name) in rst_to_js_option_names.items()
-        if rst_option_name in node["options"]
-    )
+    gen = ((rst_option_name, js_option_name)
+           for (rst_option_name,
+                js_option_name) in rst_to_js_option_names.items()
+           if rst_option_name in node["options"])
     for rst_option_name, js_option_name in gen:
         node["options"][js_option_name] = node["options"].pop(rst_option_name)
 
-    load = """<script src="../_static/asciinema-player_3.6.3.js"></script>"""
-    template = """<div id="asciicast-{src}" src></div>\n<script>\nAsciinemaPlayer.create("{src}", document.getElementById('asciicast-{src}'), {{{options} }});\n</script>\n"""
-    option_template = '{}: "{}", '
+    if node['type'] == 'local':
+        template = """<div id="asciicast-{src}"></div>
+            <script>
+                AsciinemaPlayer.create(
+                    "data:text/plain;base64,{src}",
+                    document.getElementById('asciicast-{src}'),
+                    {{{options} }});
+            </script>"""
+        option_template = '{}: "{}", '
+    else:
+        template = """<script async id="asciicast-{src}" {options}
+                src="https://asciinema.org/a/{src}.js"></script>"""
+        option_template = 'data-{}="{}" '
     src = node["content"]
     options = ""
     for n, v in node["options"].items():
         options += option_template.format(n, v)
     tag = template.format(options=options, src=src)
-    self.body.append(load)
     self.body.append(tag)
 
 
@@ -94,7 +102,7 @@ class ASCIINemaDirective(SphinxDirective):
             path += '/'
         fname = arg if arg.startswith('./') else path + arg
         if self.is_file(fname):
-            kw['content'] = fname
+            kw['content'] = self.to_b64(fname)
             kw['type'] = 'local'
             logger.debug('asciinema: added cast file %s' % fname)
         else:
