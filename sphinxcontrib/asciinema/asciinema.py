@@ -29,6 +29,8 @@ def visit_html(self, node):
         "terminalfontfamily": "terminalFontFamily",
     }
 
+    options_raw = ['markers']
+
     gen = ((rst_option_name, js_option_name)
            for (rst_option_name,
                 js_option_name) in rst_to_js_option_names.items()
@@ -37,23 +39,25 @@ def visit_html(self, node):
         node["options"][js_option_name] = node["options"].pop(rst_option_name)
 
     if node['type'] == 'local':
-        template = """<div id="asciicast-{src}"></div>
+        template = """<div id="asciicast-{id}"></div>
             <script>
                 AsciinemaPlayer.create(
                     "data:text/plain;base64,{src}",
-                    document.getElementById('asciicast-{src}'),
+                    document.getElementById('asciicast-{id}'),
                     {{{options} }});
             </script>"""
         option_template = '{}: "{}", '
+        option_template_raw = '{}: {}, '
     else:
         template = """<script async id="asciicast-{src}" {options}
                 src="https://asciinema.org/a/{src}.js"></script>"""
         option_template = 'data-{}="{}" '
-    src = node["content"]
+        option_template_raw = 'data-{}="{}" '
     options = ""
     for n, v in node["options"].items():
-        options += option_template.format(n, v)
-    tag = template.format(options=options, src=src)
+        options += option_template_raw.format(
+            n, v) if n in options_raw else option_template.format(n, v)
+    tag = template.format(options=options, src=node["content"], id=node["id"])
     self.body.append(tag)
 
 
@@ -104,9 +108,11 @@ class ASCIINemaDirective(SphinxDirective):
         if self.is_file(fname):
             kw['content'] = self.to_b64(fname)
             kw['type'] = 'local'
+            kw['id'] = fname
             logger.debug('asciinema: added cast file %s' % fname)
         else:
             kw['content'] = arg
+            kw['id'] = arg
             kw['type'] = 'remote'
             logger.debug('asciinema: added cast id %s' % arg)
         if 'path' in kw['options']:
