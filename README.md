@@ -44,8 +44,7 @@ It is possible to give options as well:
    :theme: solarized-dark
 ```
 
-You can enter all options from the [self-hosted player](https://github.com/asciinema/asciinema-player#asciinema-player-element-attributes)
-and the [embedded asciinema.org player](https://asciinema.org/docs/embedding).
+You can enter all options from the [asciinema Player Options](https://docs.asciinema.org/manual/player/options/).
 
 Default options can be set in `conf.py`:
 
