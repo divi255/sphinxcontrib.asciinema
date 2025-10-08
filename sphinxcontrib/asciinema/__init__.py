@@ -10,8 +10,8 @@ def setup(app):
     app.add_config_value('sphinxcontrib_asciinema_defaults', {}, 'html')
 
     app.connect('build-finished', copy_asset_files)
-    app.add_js_file('asciinema-player_3.6.3.js')
-    app.add_css_file('asciinema-player_3.6.3.css')
+    app.add_js_file('asciinema-player_3.8.0.js')
+    app.add_css_file('asciinema-player_3.8.0.css')
 
     app.add_node(Asciinema, **_NODE_VISITORS)
     app.add_directive('asciinema', ASCIINemaDirective)

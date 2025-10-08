@@ -39,7 +39,7 @@ def visit_html(self, node):
         node["options"][js_option_name] = node["options"].pop(rst_option_name)
 
     if node['type'] == 'local':
-        template = """<div id="asciicast-{id}"></div>
+        template = """<p id="asciicast-{id}"></p>
             <script>
                 AsciinemaPlayer.create(
                     "data:text/plain;base64,{src}",
