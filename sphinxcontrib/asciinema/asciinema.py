@@ -41,10 +41,12 @@ def visit_html(self, node):
     if node['type'] == 'local':
         template = """<div id="asciicast-{id}"></div>
             <script>
-                AsciinemaPlayer.create(
-                    "data:text/plain;base64,{src}",
-                    document.getElementById('asciicast-{id}'),
-                    {{{options} }});
+                document.addEventListener("DOMContentLoaded", function() {{
+                    AsciinemaPlayer.create(
+                        "data:text/plain;base64,{src}",
+                        document.getElementById('asciicast-{id}'),
+                        {{{options} }});
+                }});
             </script>"""
         option_template = '{}: "{}", '
         option_template_raw = '{}: {}, '
