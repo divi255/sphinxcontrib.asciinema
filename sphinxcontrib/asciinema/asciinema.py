@@ -27,6 +27,7 @@ def visit_html(self, node):
         "terminalfontsize": "terminalFontSize",
         "terminallineheigth": "terminalLineHeigth",
         "terminalfontfamily": "terminalFontFamily",
+        "audiourl": "audioUrl",
     }
 
     options_raw = ['markers']
@@ -94,6 +95,7 @@ class ASCIINemaDirective(SphinxDirective):
         "terminalfontfamily": directives.unchanged,
         "terminallineheight": directives.unchanged,
         "path": directives.unchanged,
+        "audiourl": directives.unchanged,
     }
     required_arguments = 1
     optional_arguments = len(option_spec)
